@@ -20,10 +20,10 @@ $ kubepfm --target pod-name-or-pattern:local-port:pod-port --target ...
 # example pods:
 $ kubectl get pod
 mypod-7c497c9d94-8xls2               1/1       Running     0          7d
-anotherpod-5987f84db4-9mhxf          2/2       Running     0          4d
+otherpod-5987f84db4-9mhxf            2/2       Running     0          4d
 hispod-7d8c4cbd9-dqjc6               2/2       Running     0          21d
 herpod-7d48964997-d6pgs              1/1       Running     0          3d
 
 # port-forward two pods using port 1222 to my local 8080 and 8081 ports:
-$ kubepfm --target mypod:8080:1222 --target anotherpod:8081:1222
+$ kubepfm --target mypod:8080:1222 --target otherpod:8081:1222
 ```
