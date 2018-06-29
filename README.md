@@ -13,3 +13,10 @@ $ go get -u -v github.com/flowerinthenight/kubepfm
 ```bash
 $ kubepfm --target pod-name-or-pattern:local-port:pod-port --target ...
 ```
+
+## Examples
+
+```bash
+# port-forward two pods using port 1222 to my local 8080 and 8081 ports:
+$ kubepfm --target mypod:8080:1222 --target anotherpod:8081:1222
+```
