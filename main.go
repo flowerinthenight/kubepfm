@@ -86,12 +86,28 @@ var (
 
 					go func() {
 						outscan := bufio.NewScanner(outpipe)
-						log.Printf("%v|stdout: %v", green(kcmd.Args), outscan)
+						for {
+							chk := outscan.Scan()
+							if !chk {
+								break
+							}
+
+							stxt := outscan.Text()
+							log.Printf("%v|stdout: %v", green(kcmd.Args), stxt)
+						}
 					}()
 
 					go func() {
 						errscan := bufio.NewScanner(errpipe)
-						log.Printf("%v|stderr: %v", green(kcmd.Args), errscan)
+						for {
+							chk := errscan.Scan()
+							if !chk {
+								break
+							}
+
+							stxt := errscan.Text()
+							log.Printf("%v|stderr: %v", green(kcmd.Args), stxt)
+						}
 					}()
 
 					kcmd.Wait()
