@@ -19,6 +19,7 @@ $ kubepfm --target pod-name-or-pattern:local-port:pod-port --target ...
 ```bash
 # example pods:
 $ kubectl get pod
+NAME                                 READY     STATUS      RESTARTS   AGE
 mypod-7c497c9d94-8xls2               1/1       Running     0          7d
 otherpod-5987f84db4-9mhxf            2/2       Running     0          4d
 hispod-7d8c4cbd9-dqjc6               2/2       Running     0          21d
