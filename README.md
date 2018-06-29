@@ -7,3 +7,9 @@
 ```bash
 $ go get -u -v github.com/flowerinthenight/kubepfm
 ```
+
+## Usage
+
+```bash
+$ kubepfm --target pod-name-or-pattern1:local-port:pod-port --target ...
+```
