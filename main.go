@@ -21,8 +21,7 @@ var (
 	red   = color.New(color.FgRed).SprintFunc()
 
 	targets []string
-
-	cs []*exec.Cmd
+	cs      map[string]*exec.Cmd
 
 	rootCmd = &cobra.Command{
 		Use:   "kubepfm",
@@ -33,7 +32,8 @@ var (
 				failx("need at least one target")
 			}
 
-			podsList, err := exec.Command("kubectl", "get", "pod").CombinedOutput()
+			cs = make(map[string]*exec.Cmd)
+			podsList, err := exec.Command("kubectl", "get", "pod", "--all-namespaces").CombinedOutput()
 			if err != nil {
 				failx(err)
 			}
@@ -48,16 +48,27 @@ var (
 						"get",
 						"pod",
 						"--no-headers=true",
+						"--all-namespaces",
 						"-o",
-						"custom-columns=:metadata.name",
+						"custom-columns=:metadata.name,:metadata.namespace",
 					}
 
-					podNames, _ := exec.Command("kubectl", args...).CombinedOutput()
-					re := regexp.MustCompile(t[0] + ".*")
-					targetList := re.FindAllString(string(podNames), -1)
-					if len(targetList) > 0 {
-						addcmd := exec.Command("kubectl", "port-forward", targetList[0], t[1]+":"+t[2])
-						cs = append(cs, addcmd)
+					pods, _ := exec.Command("kubectl", args...).CombinedOutput()
+					rows := strings.Split(string(pods), "\n")
+					for _, row := range rows {
+						parts := strings.Fields(row)
+						if len(parts) != 2 {
+							continue
+						}
+
+						re := regexp.MustCompile(t[0] + ".*")
+						targetList := re.FindAllString(parts[0], -1)
+						if len(targetList) > 0 {
+							addcmd := exec.Command("kubectl", "port-forward", "-n", parts[1], targetList[0], t[1]+":"+t[2])
+							if _, ok := cs[t[0]]; !ok {
+								cs[t[0]] = addcmd
+							}
+						}
 					}
 				} else {
 					fail("invalid target", c)
