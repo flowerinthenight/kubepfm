@@ -15,7 +15,15 @@ $ kubepfm --target [namespace:]pod-name-or-pattern:local-port:pod-port --target 
 ```
 If the `[namespace:]` part is not specified, the `default` namespace is used.
 
-This tool uses [`regexp.FindAllString`](https://golang.org/pkg/regexp/#Regexp.FindAllString) to resolve the input pattern. If you pattern includes `:` in it (i.e. `[[:alpha:]]`), then you need in input the `namespace` part, as we use the `:` character as our separator.
+This tool uses [`regexp.FindAllString`](https://golang.org/pkg/regexp/#Regexp.FindAllString) to resolve the input pattern. If our pattern includes `:` in it (i.e. `[[:alpha:]]`), then we need to include the `namespace` part, as we use the `:` character as our separator.
+
+```bash
+# Simple pattern, namespace not needed
+$ kubepfm --target mypod:8080:1222
+
+# Pattern with a `:` in it, namespace is required
+$ kubepfm --target "default:mypo[[:alpha:]]:8080:1222"
+```
 
 ## Examples
 
