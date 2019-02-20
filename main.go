@@ -185,6 +185,6 @@ func main() {
 		os.Exit(0)
 	}()
 
-	rootCmd.Flags().StringSliceVar(&targets, "target", targets, "fmt: pod-name-pattern:local-port:pod-port")
+	rootCmd.Flags().StringSliceVar(&targets, "target", targets, "fmt: [namespace:]pod-name-pattern:local-port:pod-port")
 	rootCmd.Execute()
 }
