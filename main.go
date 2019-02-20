@@ -41,14 +41,15 @@ var (
 			info("Your pods:")
 			fmt.Printf(string(podsList))
 
+			// Range through our input targets.
 			for _, c := range targets {
 				var args []string
 				var name, portPair string
 				t := strings.Split(c, ":")
+				portPair = t[len(t)-2] + ":" + t[len(t)-1]
 				switch len(t) {
 				case 3:
 					name = t[0]
-					portPair = t[1] + ":" + t[2]
 					args = []string{
 						"get",
 						"pod",
@@ -57,9 +58,9 @@ var (
 						"-o",
 						"custom-columns=:metadata.name,:metadata.namespace",
 					}
-				case 4:
-					name = t[1]
-					portPair = t[2] + ":" + t[3]
+				default:
+					// Rejoin the names excluding namespace and port pair.
+					name = strings.Join(t[1:len(t)-2], ":")
 					args = []string{
 						"get",
 						"pod",
@@ -68,11 +69,14 @@ var (
 						"-o",
 						"custom-columns=:metadata.name,:metadata.namespace",
 					}
-				default:
-					fail("invalid target", c)
 				}
 
-				pods, _ := exec.Command("kubectl", args...).CombinedOutput()
+				pods, err := exec.Command("kubectl", args...).CombinedOutput()
+				if err != nil {
+					fail(err, string(pods))
+					continue
+				}
+
 				rows := strings.Split(string(pods), "\n")
 				for _, row := range rows {
 					parts := strings.Fields(row)
