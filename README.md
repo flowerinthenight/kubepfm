@@ -11,7 +11,7 @@ $ go get -u -v github.com/flowerinthenight/kubepfm
 ## Usage
 
 ```bash
-$ kubepfm --target pod-name-or-pattern:local-port:pod-port --target ...
+$ kubepfm --target [namespace:]pod-name-or-pattern:local-port:pod-port --target ...
 ```
 
 ## Examples
