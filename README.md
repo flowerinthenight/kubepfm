@@ -13,6 +13,7 @@ $ go get -u -v github.com/flowerinthenight/kubepfm
 ```bash
 $ kubepfm --target [namespace:]pod-name-or-pattern:local-port:pod-port --target ...
 ```
+If the `[namespace:]` part is not specified, the `default` namespace is used.
 
 ## Examples
 
