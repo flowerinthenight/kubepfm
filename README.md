@@ -25,6 +25,8 @@ $ kubepfm --target mypod:8080:1222
 $ kubepfm --target "default:mypo[[:alpha:]]:8080:1222"
 ```
 
+Finally, the `.*` string is appended to the input `pod-name-or-pattern` before it is resolved.
+
 ## Examples
 
 ```bash
