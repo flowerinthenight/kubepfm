@@ -42,36 +42,52 @@ var (
 			fmt.Printf(string(podsList))
 
 			for _, c := range targets {
+				var args []string
+				var name, portPair string
 				t := strings.Split(c, ":")
-				if len(t) == 3 {
-					args := []string{
+				switch len(t) {
+				case 3:
+					name = t[0]
+					portPair = t[1] + ":" + t[2]
+					args = []string{
 						"get",
 						"pod",
 						"--no-headers=true",
-						"--all-namespaces",
+						"--namespace=default",
 						"-o",
 						"custom-columns=:metadata.name,:metadata.namespace",
 					}
+				case 4:
+					name = t[1]
+					portPair = t[2] + ":" + t[3]
+					args = []string{
+						"get",
+						"pod",
+						"--no-headers=true",
+						fmt.Sprintf("--namespace=%s", t[0]),
+						"-o",
+						"custom-columns=:metadata.name,:metadata.namespace",
+					}
+				default:
+					fail("invalid target", c)
+				}
 
-					pods, _ := exec.Command("kubectl", args...).CombinedOutput()
-					rows := strings.Split(string(pods), "\n")
-					for _, row := range rows {
-						parts := strings.Fields(row)
-						if len(parts) != 2 {
-							continue
-						}
+				pods, _ := exec.Command("kubectl", args...).CombinedOutput()
+				rows := strings.Split(string(pods), "\n")
+				for _, row := range rows {
+					parts := strings.Fields(row)
+					if len(parts) != 2 {
+						continue
+					}
 
-						re := regexp.MustCompile(t[0] + ".*")
-						targetList := re.FindAllString(parts[0], -1)
-						if len(targetList) > 0 {
-							addcmd := exec.Command("kubectl", "port-forward", "-n", parts[1], targetList[0], t[1]+":"+t[2])
-							if _, ok := cs[t[0]]; !ok {
-								cs[t[0]] = addcmd
-							}
+					re := regexp.MustCompile(name + ".*")
+					targetList := re.FindAllString(parts[0], -1)
+					if len(targetList) > 0 {
+						addcmd := exec.Command("kubectl", "port-forward", "-n", parts[1], targetList[0], portPair)
+						if _, ok := cs[name]; !ok {
+							cs[name] = addcmd
 						}
 					}
-				} else {
-					fail("invalid target", c)
 				}
 			}
 
