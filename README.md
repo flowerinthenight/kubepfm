@@ -53,6 +53,6 @@ kube-system   heapster-v1.5.3-6b684ff798-98tn2     3/3       Running     0      
 kube-system   kube-dns-788979dc8f-287w8            4/4       Running     0          45d
 ...
 
-# Pods will now be accessible from localhost:
+# Both pods are now accessible from localhost:
 # localhost:8080 -> mypod, localhost:8081 -> otherpod
 ```
