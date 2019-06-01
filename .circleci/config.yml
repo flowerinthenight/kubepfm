@@ -11,7 +11,6 @@ jobs:
         shell: /bin/bash
         command: |
           GO111MODULE=on GOFLAGS=-mod=vendor go build -v
-          # GO111MODULE=on go build -v
 
   build-deploy:
     docker:
@@ -23,8 +22,7 @@ jobs:
         name: buildanddeploy
         shell: /bin/bash
         command: |
-          # GO111MODULE=on GOFLAGS=-mod=vendor go build -v
-          GO111MODULE=on go build -v
+          GO111MODULE=on GOFLAGS=-mod=vendor go build -v
           tar cvzf kubepfm-${CIRCLE_TAG}-linux-amd64.tar.gz kubepfm
           ls -laF
           go get -u -v github.com/tcnksm/ghr
