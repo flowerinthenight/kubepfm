@@ -6,7 +6,7 @@
 
 ## Installation
 
-Using Homebrew:
+Using [Homebrew](https://brew.sh/):
 ```bash
 $ brew tap flowerinthenight/tap
 $ brew install kubepfm
