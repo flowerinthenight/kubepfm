@@ -6,6 +6,13 @@
 
 ## Installation
 
+Using Homebrew:
+```bash
+$ brew tap flowerinthenight/tap
+$ brew install kubepfm
+```
+
+If you have a Go environment:
 ```bash
 $ go get -u -v github.com/flowerinthenight/kubepfm
 ```
