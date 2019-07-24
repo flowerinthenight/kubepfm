@@ -57,6 +57,7 @@ func Run(cmd *cobra.Command, args []string) {
 			args = []string{
 				"get",
 				"pod",
+				"--field-selector=status.phase=Running",
 				"--no-headers=true",
 				"--namespace=default",
 				"-o",
@@ -68,6 +69,7 @@ func Run(cmd *cobra.Command, args []string) {
 			args = []string{
 				"get",
 				"pod",
+				"--field-selector=status.phase=Running",
 				"--no-headers=true",
 				fmt.Sprintf("--namespace=%s", t[0]),
 				"-o",
