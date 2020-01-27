@@ -34,7 +34,7 @@ $ kubepfm --target mypod:8080:1222
 $ kubepfm --target "default:mypo[[:alpha:]]:8080:1222"
 ```
 
-By default, this tool will port-forward to pods. If you want to use deployments or service, you can prefix the name/pattern with the resource type.
+By default, this tool will port-forward to pods. If you want to forward to deployments or services, you can prefix the name/pattern with the resource type.
 
 ```bash
 # Using deployment
