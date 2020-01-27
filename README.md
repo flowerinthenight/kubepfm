@@ -41,7 +41,7 @@ By default, this tool will port-forward to pods. If you want to forward to deplo
 $ kubepfm --target deployment/dep1:8080:8080
 
 # Using service
-$ kubepfm --target service/svc1:8080:8080
+$ kubepfm --target service/svc1:8080:8080 --target service/svc2:8081:80
 ```
 
 Finally, the `.*` string is appended to the input name/pattern before it is resolved.
