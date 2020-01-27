@@ -44,7 +44,7 @@ $ kubepfm --target deployment/dep1:8080:8080
 $ kubepfm --target service/svc1:8080:8080
 ```
 
-Finally, the `.*` string is appended to the input `pod-name-or-pattern` before it is resolved.
+Finally, the `.*` string is appended to the input name/pattern before it is resolved.
 
 ## Examples
 
