@@ -20,7 +20,7 @@ $ go get -u -v github.com/flowerinthenight/kubepfm
 ## Usage
 
 ```bash
-$ kubepfm --target [namespace:]pod-name-or-pattern:local-port:pod-port --target ...
+$ kubepfm --target [namespace:]name-or-pattern:local-port:remote-port --target ...
 ```
 If the `[namespace:]` part is not specified, the `default` namespace is used.
 
@@ -32,6 +32,16 @@ $ kubepfm --target mypod:8080:1222
 
 # Pattern with a `:` in it, namespace is required
 $ kubepfm --target "default:mypo[[:alpha:]]:8080:1222"
+```
+
+By default, this tool will port-forward to pods. If you want to use deployments or service, you can prefix the name/pattern with the resource type.
+
+```bash
+# Using deployment
+$ kubepfm --target deployment/dep1:8080:8080
+
+# Using service
+$ kubepfm --target service/svc1:8080:8080
 ```
 
 Finally, the `.*` string is appended to the input `pod-name-or-pattern` before it is resolved.
