@@ -48,6 +48,7 @@ Finally, the `.*` string is appended to the input name/pattern before it is reso
 
 ## Examples
 
+View our running pods:
 ```bash
 # Example pods:
 $ kubectl get pod
@@ -56,8 +57,10 @@ mypod-7c497c9d94-8xls2               1/1       Running     0          7d
 otherpod-5987f84db4-9mhxf            1/1       Running     0          4d
 hispod-7d8c4cbd9-dqjc6               1/1       Running     0          21d
 herpod-7d48964997-d6pgs              1/1       Running     0          3d
+```
 
-# Do a port-forward to two pods using port 1222 to our local 8080 and 8081 ports:
+Do a port-forward to two pods using port 1222 to our local 8080 and 8081 ports:
+```bash
 $ kubepfm --target mypod:8080:1222 --target otherpod:8081:1222
 2019/02/19 18:40:05 [info] Your pods:
 NAMESPACE     NAME                                 READY     STATUS      RESTARTS   AGE
