@@ -69,7 +69,8 @@ default       herpod-7d48964997-d6pgs              1/1       Running     0      
 kube-system   heapster-v1.5.3-6b684ff798-98tn2     3/3       Running     0          27d
 kube-system   kube-dns-788979dc8f-287w8            4/4       Running     0          45d
 ...
-
-# Both pods are now accessible from localhost:
-# localhost:8080 -> mypod, localhost:8081 -> otherpod
 ```
+
+Both pods are now accessible from localhost:
+- localhost:8080 --> mypod
+- localhost:8081 --> otherpod
