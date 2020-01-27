@@ -70,7 +70,7 @@ $ kubepfm --target mypod:8080:1222 --target otherpod:8081:1222
 
 Both pods are now accessible from localhost:
 ```bash
-* localhost:8080 --> mypod
-* localhost:8081 --> otherpod
+localhost:8080 --> mypod
+localhost:8081 --> otherpod
 ```
 
