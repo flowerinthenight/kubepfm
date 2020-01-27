@@ -20,7 +20,7 @@ $ go get -u -v github.com/flowerinthenight/kubepfm
 ## Usage
 
 ```bash
-$ kubepfm --target [namespace:]name-or-pattern:local-port:remote-port --target ...
+$ kubepfm --target [namespace:]name-or-pattern:local-port:remote-port [--target ...]
 ```
 If the `[namespace:]` part is not specified, the `default` namespace is used.
 
