@@ -26,6 +26,8 @@ If the `[namespace:]` part is not specified, the `default` namespace is used.
 
 This tool uses [`regexp.FindAllString`](https://golang.org/pkg/regexp/#Regexp.FindAllString) to resolve the input pattern. If your pattern includes `:` in it (i.e. `[[:alpha:]]`), then you need to include the `namespace` part, as this tool uses the `:` character as its input separator.
 
+If you have preprocessed target parameters (or more than fit as parameters) you can also give them as individual lines via STDIN instead.
+
 ```bash
 # Simple pattern, namespace not needed
 $ kubepfm --target mypod:8080:1222
