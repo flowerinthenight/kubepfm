@@ -20,8 +20,9 @@ $ go get -u -v github.com/flowerinthenight/kubepfm
 ## Usage
 
 ```bash
-$ kubepfm --target [namespace:]name-or-pattern:local-port:remote-port [--target ...]
+$ kubepfm --target [context:][namespace:]name-or-pattern:local-port:remote-port [--target ...]
 ```
+If the `[context:]` part is not specified, the currently set context is used.
 If the `[namespace:]` part is not specified, the `default` namespace is used.
 
 This tool uses [`regexp.FindAllString`](https://golang.org/pkg/regexp/#Regexp.FindAllString) to resolve the input pattern. If your pattern includes `:` in it (i.e. `[[:alpha:]]`), then you need to include the `namespace` part, as this tool uses the `:` character as its input separator.
@@ -32,6 +33,9 @@ $ kubepfm --target mypod:8080:1222
 
 # Pattern with a `:` in it, namespace is required
 $ kubepfm --target "default:mypo[[:alpha:]]:8080:1222"
+
+# Pattern with multiple `:` in it, context and namespace are required
+$ kubepfm --target "somecontext:default:mypo[[:alpha:]]:8080:1222"
 ```
 
 By default, this tool will port-forward to pods. If you want to forward to deployments or services, you can prefix the name/pattern with the resource type.
