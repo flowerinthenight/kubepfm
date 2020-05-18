@@ -39,6 +39,8 @@ func Run(cmd *cobra.Command, args []string) {
 		for scanner.Scan() {
 			targets = append(targets, scanner.Text())
 		}
+
+		info(fmt.Sprintf("read %d targets from stdin", len(targets)))
 	}
 
 	if len(targets) == 0 {
