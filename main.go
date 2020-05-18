@@ -52,8 +52,12 @@ func Run(cmd *cobra.Command, args []string) {
 		rctype := "pod"
 		t := strings.Split(c, ":")
 		portPair = t[len(t)-2] + ":" + t[len(t)-1]
+
+		var context string
+
 		switch len(t) {
 		case 3:
+			// name:port:port combination
 			name = t[0]
 			if nn := strings.Split(name, "/"); len(nn) > 1 {
 				rctype = nn[0]
@@ -67,7 +71,9 @@ func Run(cmd *cobra.Command, args []string) {
 				"-o",
 				"custom-columns=:metadata.name,:metadata.namespace",
 			}
-		default:
+		case 4:
+			// namespace:name:port:port combination
+
 			// Rejoin the names excluding namespace and port pair.
 			name = strings.Join(t[1:len(t)-2], ":")
 			if nn := strings.Split(name, "/"); len(nn) > 1 {
@@ -82,6 +88,28 @@ func Run(cmd *cobra.Command, args []string) {
 				"-o",
 				"custom-columns=:metadata.name,:metadata.namespace",
 			}
+		case 5:
+			// context:namespace:name:port:port combination
+			context = t[0]
+
+			// Rejoin the names excluding namespace and port pair.
+			name = strings.Join(t[2:len(t)-2], ":")
+			if nn := strings.Split(name, "/"); len(nn) > 1 {
+				rctype = nn[0]
+			}
+
+			args = []string{
+				"get",
+				rctype,
+				"--no-headers=true",
+				fmt.Sprintf("--context=%s", context),
+				fmt.Sprintf("--namespace=%s", t[1]),
+				"-o",
+				"custom-columns=:metadata.name,:metadata.namespace",
+			}
+		default:
+			// unknown combination
+			info("Ignoring unrecognized target definition " + c)
 		}
 
 		if rctype == "pod" {
@@ -109,9 +137,14 @@ func Run(cmd *cobra.Command, args []string) {
 			re := regexp.MustCompile(search + ".*")
 			targetList := re.FindAllString(parts[0], -1)
 			if len(targetList) > 0 {
-				addcmd := exec.Command("kubectl", "port-forward", "-n", parts[1], rctype+"/"+targetList[0], portPair)
-				if _, ok := cs[name]; !ok {
-					cs[name] = addcmd
+				var addcmd *exec.Cmd
+				if context == "" {
+					addcmd = exec.Command("kubectl", "port-forward", "-n", parts[1], rctype+"/"+targetList[0], portPair)
+				} else {
+					addcmd = exec.Command("kubectl", "--context", context, "port-forward", "-n", parts[1], rctype+"/"+targetList[0], portPair)
+				}
+				if _, ok := cs[context+":"+parts[1]+":"+name]; !ok {
+					cs[context+":"+parts[1]+":"+name] = addcmd
 				}
 			}
 		}
