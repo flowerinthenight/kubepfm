@@ -22,7 +22,6 @@ var (
 
 	targets []string
 	cs      map[string]*exec.Cmd
-	gp      map[string][]byte
 
 	rootCmd = &cobra.Command{
 		Use:   "kubepfm",
@@ -37,10 +36,7 @@ func Run(cmd *cobra.Command, args []string) {
 		failx("need at least one target")
 	}
 
-	// map of commands running
 	cs = make(map[string]*exec.Cmd)
-	// map of get pod results
-	gp = make(map[string][]byte)
 
 	// Range through our input targets.
 	for _, c := range targets {
@@ -49,13 +45,8 @@ func Run(cmd *cobra.Command, args []string) {
 		rctype := "pod"
 		t := strings.Split(c, ":")
 		portPair = t[len(t)-2] + ":" + t[len(t)-1]
-
-		var context string
-		var namespace string = "default"
-
 		switch len(t) {
 		case 3:
-			// name:port:port combination
 			name = t[0]
 			if nn := strings.Split(name, "/"); len(nn) > 1 {
 				rctype = nn[0]
@@ -69,10 +60,7 @@ func Run(cmd *cobra.Command, args []string) {
 				"-o",
 				"custom-columns=:metadata.name,:metadata.namespace",
 			}
-		case 4:
-			// namespace:name:port:port combination
-			namespace = t[0]
-
+		default:
 			// Rejoin the names excluding namespace and port pair.
 			name = strings.Join(t[1:len(t)-2], ":")
 			if nn := strings.Split(name, "/"); len(nn) > 1 {
@@ -83,48 +71,20 @@ func Run(cmd *cobra.Command, args []string) {
 				"get",
 				rctype,
 				"--no-headers=true",
-				fmt.Sprintf("--namespace=%s", namespace),
+				fmt.Sprintf("--namespace=%s", t[0]),
 				"-o",
 				"custom-columns=:metadata.name,:metadata.namespace",
 			}
-		case 5:
-			// context:namespace:name:port:port combination
-			context = t[0]
-			namespace = t[1]
-
-			// Rejoin the names excluding namespace and port pair.
-			name = strings.Join(t[2:len(t)-2], ":")
-			if nn := strings.Split(name, "/"); len(nn) > 1 {
-				rctype = nn[0]
-			}
-
-			args = []string{
-				"get",
-				rctype,
-				"--no-headers=true",
-				fmt.Sprintf("--context=%s", context),
-				fmt.Sprintf("--namespace=%s", namespace),
-				"-o",
-				"custom-columns=:metadata.name,:metadata.namespace",
-			}
-		default:
-			// unknown combination
-			info("Ignoring unrecognized target definition " + c)
-			continue
 		}
 
 		if rctype == "pod" {
 			args = append(args, "--field-selector=status.phase=Running")
 		}
 
-		rcs, ok := gp[context+":"+namespace]
-		if !ok {
-			rcs, err := exec.Command("kubectl", args...).CombinedOutput()
-			if err != nil {
-				fail(err, string(rcs))
-				continue
-			}
-			gp[context+":"+namespace] = rcs
+		rcs, err := exec.Command("kubectl", args...).CombinedOutput()
+		if err != nil {
+			fail(err, string(rcs))
+			continue
 		}
 
 		rows := strings.Split(string(rcs), "\n")
@@ -142,14 +102,9 @@ func Run(cmd *cobra.Command, args []string) {
 			re := regexp.MustCompile(search + ".*")
 			targetList := re.FindAllString(parts[0], -1)
 			if len(targetList) > 0 {
-				var addcmd *exec.Cmd
-				if context == "" {
-					addcmd = exec.Command("kubectl", "port-forward", "-n", parts[1], rctype+"/"+targetList[0], portPair)
-				} else {
-					addcmd = exec.Command("kubectl", "--context", context, "port-forward", "-n", parts[1], rctype+"/"+targetList[0], portPair)
-				}
-				if _, ok := cs[context+":"+parts[1]+":"+name]; !ok {
-					cs[context+":"+parts[1]+":"+name] = addcmd
+				addcmd := exec.Command("kubectl", "port-forward", "-n", parts[1], rctype+"/"+targetList[0], portPair)
+				if _, ok := cs[name]; !ok {
+					cs[name] = addcmd
 				}
 			}
 		}
