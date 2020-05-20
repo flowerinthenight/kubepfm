@@ -33,6 +33,17 @@ var (
 
 func Run(cmd *cobra.Command, args []string) {
 	if len(targets) == 0 {
+		info("didn't find any targets on the commandline, reading from stdin")
+
+		scanner := bufio.NewScanner(os.Stdin)
+		for scanner.Scan() {
+			targets = append(targets, scanner.Text())
+		}
+
+		info(fmt.Sprintf("read %d targets from stdin", len(targets)))
+	}
+
+	if len(targets) == 0 {
 		failx("need at least one target")
 	}
 
