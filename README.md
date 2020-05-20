@@ -26,14 +26,20 @@ If the `[namespace:]` part is not specified, the `default` namespace is used.
 
 This tool uses [`regexp.FindAllString`](https://golang.org/pkg/regexp/#Regexp.FindAllString) to resolve the input pattern. If your pattern includes `:` in it (i.e. `[[:alpha:]]`), then you need to include the `namespace` part, as this tool uses the `:` character as its input separator.
 
-If you have preprocessed target parameters, you can also give them as individual lines via STDIN instead.
-
 ```bash
 # Simple pattern, namespace not needed
 $ kubepfm --target mypod:8080:1222
 
 # Pattern with a `:` in it, namespace is required
 $ kubepfm --target "default:mypo[[:alpha:]]:8080:1222"
+```
+
+You can also pipe input from STDIN as well.
+```bash
+$ cat input.txt
+mypod:8080:1222
+otherpod:8081:1222
+$ cat input.txt | kubepfm
 ```
 
 By default, this tool will port-forward to pods. If you want to forward to deployments or services, you can prefix the name/pattern with the resource type.
