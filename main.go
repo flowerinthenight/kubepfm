@@ -43,10 +43,6 @@ func Run(cmd *cobra.Command, args []string) {
 		info(fmt.Sprintf("read %d targets from stdin", len(targets)))
 	}
 
-	if len(targets) == 0 {
-		failx("need at least one target")
-	}
-
 	cs = make(map[string]*exec.Cmd)
 
 	// Range through our input targets.
