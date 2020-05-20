@@ -40,6 +40,12 @@ $ cat input.txt
 mypod:8080:1222
 otherpod:8081:1222
 $ cat input.txt | kubepfm
+
+# Or you can do it this way:
+$ kubepfm
+mypod:8080:1222
+otherpod:8081:1222
+Ctrl+D
 ```
 
 By default, this tool will port-forward to pods. If you want to forward to deployments or services, you can prefix the name/pattern with the resource type.
