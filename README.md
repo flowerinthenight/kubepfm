@@ -36,8 +36,8 @@ $ kubepfm --target ns=default:mypod:8080:1222
 
 # With context. Useful if you need to port-forward to different clusters in one go.
 # See 'kubectl config' for more information.
-$ kubepfm --target ctx=devcluster:ns=default:mypod:8080:1222 \
-          --target ctx=prodcluster:ns=default:somepod:8081:1222
+$ kubepfm --target "ctx=devcluster:ns=default:mypod:8080:1222" \
+          --target "ctx=prodcluster:ns=default:somepod:8081:1222"
 ```
 
 You can also pipe input from STDIN as well.
