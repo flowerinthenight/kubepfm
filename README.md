@@ -20,7 +20,7 @@ $ go get -u -v github.com/flowerinthenight/kubepfm
 ## Usage
 
 ```bash
-$ kubepfm --target [context:][namespace:]name-or-pattern:local-port:remote-port [--target ...]
+$ kubepfm --target [ctx=context:[ns=]namespace:]name-or-pattern:local-port:remote-port [--target ...]
 ```
 If the `[context:]` part is not specified, the currently set context is used.
 If the `[namespace:]` part is not specified, the `default` namespace is used.
@@ -91,4 +91,3 @@ Both pods are now accessible from localhost:
 localhost:8080 --> mypod
 localhost:8081 --> otherpod
 ```
-
