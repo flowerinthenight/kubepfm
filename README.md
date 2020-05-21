@@ -24,7 +24,7 @@ $ kubepfm --target [ctx=context:[ns=]namespace:]name-or-pattern:local-port:remot
 ```
 If the `[ctx=context]` part is not specified, the current context is used. If the `[ns=namespace:]` part is not specified, the `default` namespace is used.
 
-This tool uses [`regexp.FindAllString`](https://golang.org/pkg/regexp/#Regexp.FindAllString) to resolve the input pattern. Since this tool uses the `:` character as its input separator, it cannot process input patterns that contain `:`, such as `[[:alpha:]]`). The `.*` string is appended to the input name/pattern before it is resolved. For example, if the input name pattern is `my.+d`, it is resolved as `my.+d.*`.
+This tool uses [`regexp.FindAllString`](https://golang.org/pkg/regexp/#Regexp.FindAllString) to resolve the input pattern. Since this tool uses the `:` character as its input separator, it cannot process input patterns that contain `:`, such as `[[:alpha:]]`). Also, the `.*` string is appended to the input name/pattern before it is resolved. For example, if the input name pattern is `my.+d`, it is resolved as `my.+d.*`.
 
 ```bash
 # Simple pattern, namespace not needed.
