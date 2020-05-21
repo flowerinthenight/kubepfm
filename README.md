@@ -22,20 +22,21 @@ $ go get -u -v github.com/flowerinthenight/kubepfm
 ```bash
 $ kubepfm --target [ctx=context:[ns=]namespace:]name-or-pattern:local-port:remote-port [--target ...]
 ```
-If the `[context:]` part is not specified, the currently set context is used.
-If the `[namespace:]` part is not specified, the `default` namespace is used.
+If the `[ctx=context]` part is not specified, the current context is used. If the `[ns=namespace:]` part is not specified, the `default` namespace is used.
 
-This tool uses [`regexp.FindAllString`](https://golang.org/pkg/regexp/#Regexp.FindAllString) to resolve the input pattern. If your pattern includes `:` in it (i.e. `[[:alpha:]]`), then you need to include the `namespace` part, as this tool uses the `:` character as its input separator.
+This tool uses [`regexp.FindAllString`](https://golang.org/pkg/regexp/#Regexp.FindAllString) to resolve the input pattern. Since this tool uses the `:` character as its input separator, it cannot process input patterns that contain `:`, such as `[[:alpha:]]`).
 
 ```bash
-# Simple pattern, namespace not needed
+# Simple pattern, namespace not needed.
 $ kubepfm --target mypod:8080:1222
 
-# Pattern with a `:` in it, namespace is required
-$ kubepfm --target "default:mypo[[:alpha:]]:8080:1222"
+# With namespace input.
+$ kubepfm --target default:mypod:8080:1222
+$ kubepfm --target ns=default:mypod:8080:1222
 
-# Pattern with multiple `:` in it, context and namespace are required
-$ kubepfm --target "somecontext:default:mypo[[:alpha:]]:8080:1222"
+# With context. Useful if you need to port-forward to different clusters in one go.
+$ kubepfm --target ctx=devcluster:ns=default:mypod:8080:1222 \
+    --target ctx=prodcluster:ns=default:mypod:8081:1222
 ```
 
 You can also pipe input from STDIN as well.
