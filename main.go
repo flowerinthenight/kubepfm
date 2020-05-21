@@ -27,14 +27,94 @@ var (
 		Use:   "kubepfm",
 		Short: "simple port-forward wrapper tool for multiple pods",
 		Long:  "Simple port-forward wrapper tool for multiple pods.",
-		Run:   Run,
+		RunE:  Run,
 	}
 )
 
-func Run(cmd *cobra.Command, args []string) {
-	if len(targets) == 0 {
-		info("didn't find any targets on the commandline, reading from stdin")
+// Returns the kubectl args, kubectl context name, resource name, and the port pair (i.e. 8080:1222) from the input.
+func parse(in string) ([]string, string, string, string) {
+	var args []string
+	var ctx, name, ports string
+	rctype := "pod"
+	ns := "default"
+	t := strings.Split(in, ":")
 
+	// Type of supported input formats:
+	//   --target [namespace:]name:8080:1222
+	//   --target ctx=minikube:ns=default:deployment/testdeployment:8080:1222
+	switch {
+	case len(t) == 3:
+		// Simplest form: name:port:port
+		name = t[0]
+		if nn := strings.Split(name, "/"); len(nn) > 1 {
+			rctype = nn[0]
+		}
+
+		ports = t[len(t)-2] + ":" + t[len(t)-1]
+		args = []string{
+			"get",
+			rctype,
+			"--no-headers=true",
+			fmt.Sprintf("--namespace=%s", ns),
+			"-o",
+			"custom-columns=:metadata.name,:metadata.namespace",
+		}
+	case (len(t) == 4 && !strings.HasPrefix(in, "ctx=")) || (len(t) == 4 && strings.HasPrefix(in, "ns=")):
+		// First check: old optional namespace (namespace:name:port:port)
+		// Second check: old optional namespace with optional prefix ns= (ns=namespace:name:port:port)
+		ns = t[0]
+		if strings.HasPrefix(ns, "ns=") {
+			ns = strings.Split(ns, "=")[1]
+		}
+
+		name = t[1]
+		if nn := strings.Split(name, "/"); len(nn) > 1 {
+			rctype = nn[0]
+		}
+
+		ports = t[len(t)-2] + ":" + t[len(t)-1]
+		args = []string{
+			"get",
+			rctype,
+			"--no-headers=true",
+			fmt.Sprintf("--namespace=%s", ns),
+			"-o",
+			"custom-columns=:metadata.name,:metadata.namespace",
+		}
+	case len(t) > 4 && strings.HasPrefix(in, "ctx="):
+		// With context and optional namespace: [ctx=context:ns=namespace:]name:port:port
+		ctx = strings.Split(t[0], "=")[1]
+		ns = t[1]
+		if strings.HasPrefix(ns, "ns=") {
+			ns = strings.Split(ns, "=")[1]
+		}
+
+		name = t[2]
+		if nn := strings.Split(name, "/"); len(nn) > 1 {
+			rctype = nn[0]
+		}
+
+		ports = t[len(t)-2] + ":" + t[len(t)-1]
+		args = []string{
+			"get",
+			rctype,
+			"--no-headers=true",
+			fmt.Sprintf("--context=%s", ctx),
+			fmt.Sprintf("--namespace=%s", ns),
+			"-o",
+			"custom-columns=:metadata.name,:metadata.namespace",
+		}
+	default:
+		// unknown combination
+		fail("skip unknown target: " + in)
+	}
+
+	return args, ctx, name, ports
+}
+
+func Run(cmd *cobra.Command, args []string) error {
+	if len(targets) == 0 {
+		info("no target inputs, read from stdin")
 		scanner := bufio.NewScanner(os.Stdin)
 		for scanner.Scan() {
 			targets = append(targets, scanner.Text())
@@ -47,76 +127,17 @@ func Run(cmd *cobra.Command, args []string) {
 
 	// Range through our input targets.
 	for _, c := range targets {
-		var args []string
-		var name, portPair string
-		rctype := "pod"
-		t := strings.Split(c, ":")
-		portPair = t[len(t)-2] + ":" + t[len(t)-1]
-
-		var context string
-
-		switch len(t) {
-		case 3:
-			// name:port:port combination
-			name = t[0]
-			if nn := strings.Split(name, "/"); len(nn) > 1 {
-				rctype = nn[0]
-			}
-
-			args = []string{
-				"get",
-				rctype,
-				"--no-headers=true",
-				"--namespace=default",
-				"-o",
-				"custom-columns=:metadata.name,:metadata.namespace",
-			}
-		case 4:
-			// namespace:name:port:port combination
-
-			// Rejoin the names excluding namespace and port pair.
-			name = strings.Join(t[1:len(t)-2], ":")
-			if nn := strings.Split(name, "/"); len(nn) > 1 {
-				rctype = nn[0]
-			}
-
-			args = []string{
-				"get",
-				rctype,
-				"--no-headers=true",
-				fmt.Sprintf("--namespace=%s", t[0]),
-				"-o",
-				"custom-columns=:metadata.name,:metadata.namespace",
-			}
-		case 5:
-			// context:namespace:name:port:port combination
-			context = t[0]
-
-			// Rejoin the names excluding namespace and port pair.
-			name = strings.Join(t[2:len(t)-2], ":")
-			if nn := strings.Split(name, "/"); len(nn) > 1 {
-				rctype = nn[0]
-			}
-
-			args = []string{
-				"get",
-				rctype,
-				"--no-headers=true",
-				fmt.Sprintf("--context=%s", context),
-				fmt.Sprintf("--namespace=%s", t[1]),
-				"-o",
-				"custom-columns=:metadata.name,:metadata.namespace",
-			}
-		default:
-			// unknown combination
-			info("Ignoring unrecognized target definition " + c)
+		v, ctx, name, portpair := parse(c)
+		if v == nil {
+			return fmt.Errorf("invalid target: %v", c)
 		}
 
+		rctype := v[1]
 		if rctype == "pod" {
-			args = append(args, "--field-selector=status.phase=Running")
+			v = append(v, "--field-selector=status.phase=Running")
 		}
 
-		rcs, err := exec.Command("kubectl", args...).CombinedOutput()
+		rcs, err := exec.Command("kubectl", v...).CombinedOutput()
 		if err != nil {
 			fail(err, string(rcs))
 			continue
@@ -138,13 +159,15 @@ func Run(cmd *cobra.Command, args []string) {
 			targetList := re.FindAllString(parts[0], -1)
 			if len(targetList) > 0 {
 				var addcmd *exec.Cmd
-				if context == "" {
-					addcmd = exec.Command("kubectl", "port-forward", "-n", parts[1], rctype+"/"+targetList[0], portPair)
+				if ctx == "" {
+					addcmd = exec.Command("kubectl", "port-forward", "-n", parts[1], rctype+"/"+targetList[0], portpair)
 				} else {
-					addcmd = exec.Command("kubectl", "--context", context, "port-forward", "-n", parts[1], rctype+"/"+targetList[0], portPair)
+					addcmd = exec.Command("kubectl", "--context", ctx, "port-forward", "-n", parts[1], rctype+"/"+targetList[0], portpair)
 				}
-				if _, ok := cs[context+":"+parts[1]+":"+name]; !ok {
-					cs[context+":"+parts[1]+":"+name] = addcmd
+
+				key := fmt.Sprintf("%s:%s:%s", ctx, parts[1], name)
+				if _, ok := cs[key]; !ok {
+					cs[key] = addcmd
 				}
 			}
 		}
@@ -203,6 +226,8 @@ func Run(cmd *cobra.Command, args []string) {
 
 		<-done
 	}
+
+	return nil
 }
 
 func info(v ...interface{}) {
@@ -238,6 +263,6 @@ func main() {
 		os.Exit(0)
 	}()
 
-	rootCmd.Flags().StringSliceVar(&targets, "target", targets, "fmt: [namespace:]pod-name-pattern:local-port:pod-port")
+	rootCmd.Flags().StringSliceVar(&targets, "target", targets, "fmt: [[ctx=context:ns=[namespace:]]pod-name-pattern:local-port:pod-port")
 	rootCmd.Execute()
 }
