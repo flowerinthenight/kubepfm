@@ -24,7 +24,7 @@ $ kubepfm --target [ctx=context:[ns=]namespace:]name-or-pattern:local-port:remot
 ```
 If the `[ctx=context]` part is not specified, the current context is used. If the `[ns=namespace:]` part is not specified, the `default` namespace is used.
 
-This tool uses [`regexp.FindAllString`](https://golang.org/pkg/regexp/#Regexp.FindAllString) to resolve the input pattern. Since this tool uses the `:` character as its input separator, it cannot process input patterns that contain `:`, such as `[[:alpha:]]`).
+This tool uses [`regexp.FindAllString`](https://golang.org/pkg/regexp/#Regexp.FindAllString) to resolve the input pattern. Since this tool uses the `:` character as its input separator, it cannot process input patterns that contain `:`, such as `[[:alpha:]]`). The `.*` string is appended to the input name/pattern before it is resolved.
 
 ```bash
 # Simple pattern, namespace not needed.
@@ -63,8 +63,6 @@ $ kubepfm --target deployment/dep1:8080:8080
 # Using services
 $ kubepfm --target service/svc1:8080:8080 --target service/svc2:8081:80
 ```
-
-Finally, the `.*` string is appended to the input name/pattern before it is resolved.
 
 ## Examples
 
