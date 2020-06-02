@@ -30,7 +30,7 @@ This tool uses [`regexp.FindAllString`](https://golang.org/pkg/regexp/#Regexp.Fi
 # Simple pattern, namespace not needed.
 $ kubepfm --target mypod:8080:1222
 
-# With namespace input.
+# With namespace input (`ns=` is optional).
 $ kubepfm --target default:mypod:8080:1222
 $ kubepfm --target ns=default:mypod:8080:1222
 
