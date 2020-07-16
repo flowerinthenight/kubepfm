@@ -1,0 +1,33 @@
+builds:
+- id: "kubepfm"
+  binary: kubepfm
+  goos:
+  - linux
+  - darwin
+  goarch:
+  - amd64
+checksum:
+  name_template: 'checksums.txt'
+dist: /tmp/kubepfm/dist
+changelog:
+  sort: asc
+  filters:
+    exclude:
+    - '^docs:'
+    - '^test:'
+release:
+  github:
+    owner: flowerinthenight
+    name: kubepfm
+brews:
+- tap:
+    owner: flowerinthenight
+    name: homebrew-tap
+  name: kubepfm
+  homepage: "https://github.com/flowerinthenight/kubepfm"
+  description: "Simple port-forward wrapper tool for multiple pods."
+  folder: Formula
+  install: |
+    bin.install "kubepfm"
+  test: |
+    assert_match /Simple port-forward wrapper tool for multiple pods/, shell_output("#{bin}/kubepfm -h", 0)

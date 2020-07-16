@@ -2,7 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-    - image: circleci/golang:1.14
+    - image: circleci/golang:1.14.4
     working_directory: /go/src/github.com/flowerinthenight/kubepfm/
     steps:
     - checkout
@@ -10,11 +10,11 @@ jobs:
         name: build
         shell: /bin/bash
         command: |
-          GO111MODULE=on GOFLAGS=-mod=vendor go build -v
+          GO111MODULE=on go build -v
 
   build-deploy:
     docker:
-    - image: circleci/golang:1.14
+    - image: circleci/golang:1.14.4
     working_directory: /go/src/github.com/flowerinthenight/kubepfm/
     steps:
     - checkout
@@ -22,11 +22,11 @@ jobs:
         name: buildanddeploy
         shell: /bin/bash
         command: |
-          GO111MODULE=on GOFLAGS=-mod=vendor go build -v
-          tar cvzf kubepfm-${CIRCLE_TAG}-linux-amd64.tar.gz kubepfm
-          ls -laF
-          go get -u -v github.com/tcnksm/ghr
-          ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./kubepfm-${CIRCLE_TAG}-linux-amd64.tar.gz
+          GO111MODULE=on go build -v
+          # tar cvzf kubepfm-${CIRCLE_TAG}-linux-amd64.tar.gz kubepfm
+          # ls -laF
+          # go get -u -v github.com/tcnksm/ghr
+          # ghr -t ${GITHUB_TOKEN} -u ${CIRCLE_PROJECT_USERNAME} -r ${CIRCLE_PROJECT_REPONAME} -c ${CIRCLE_SHA1} -delete ${CIRCLE_TAG} ./kubepfm-${CIRCLE_TAG}-linux-amd64.tar.gz
 
 workflows:
   version: 2
