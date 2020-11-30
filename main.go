@@ -165,7 +165,7 @@ func Run(cmd *cobra.Command, args []string) error {
 					addcmd = exec.Command("kubectl", "--context", ctx, "port-forward", "-n", parts[1], rctype+"/"+targetList[0], portpair)
 				}
 
-				key := fmt.Sprintf("%s:%s:%s", ctx, parts[1], name)
+				key := fmt.Sprintf("%s:%s:%s:%s", ctx, parts[1], name, portpair)
 				if _, ok := cs[key]; !ok {
 					cs[key] = addcmd
 				}
