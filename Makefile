@@ -7,7 +7,7 @@ MODULE = kubepfm
 all: $(MODULE)
 
 $(MODULE):| $(BASE)
-	@GO111MODULE=on GOFLAGS=-mod=vendor go install -v
+	@GO111MODULE=on go install -v
 
 $(BASE):
 	@mkdir -p $(dir $@)
