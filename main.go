@@ -24,10 +24,11 @@ var (
 	cs      map[string]*exec.Cmd
 
 	rootCmd = &cobra.Command{
-		Use:   "kubepfm",
-		Short: "simple port-forward wrapper tool for multiple pods",
-		Long:  "Simple port-forward wrapper tool for multiple pods.",
-		RunE:  Run,
+		Use:          "kubepfm",
+		Short:        "A simple port-forward wrapper tool for multiple pods/deployments/services",
+		Long:         "A simple port-forward wrapper tool for multiple pods/deployments/services.",
+		RunE:         Run,
+		SilenceUsage: true,
 	}
 )
 
@@ -173,60 +174,61 @@ func Run(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	if len(cs) > 0 {
-		done := make(chan error)
-
-		// Start all cmds.
-		for _, c := range cs {
-			go func(kcmd *exec.Cmd) {
-				outpipe, err := kcmd.StdoutPipe()
-				if err != nil {
-					failx(err)
-				}
-
-				errpipe, err := kcmd.StderrPipe()
-				if err != nil {
-					failx(err)
-				}
-
-				err = kcmd.Start()
-				if err != nil {
-					failx(err)
-				}
-
-				go func() {
-					outscan := bufio.NewScanner(outpipe)
-					for {
-						chk := outscan.Scan()
-						if !chk {
-							break
-						}
-
-						stxt := outscan.Text()
-						log.Printf("%v|stdout: %v", green(kcmd.Args), stxt)
-					}
-				}()
-
-				go func() {
-					errscan := bufio.NewScanner(errpipe)
-					for {
-						chk := errscan.Scan()
-						if !chk {
-							break
-						}
-
-						stxt := errscan.Text()
-						log.Printf("%v|stderr: %v", green(kcmd.Args), stxt)
-					}
-				}()
-
-				kcmd.Wait()
-			}(c)
-		}
-
-		<-done
+	if len(cs) == 0 {
+		return nil
 	}
 
+	done := make(chan error)
+
+	// Start all cmds.
+	for _, c := range cs {
+		go func(kcmd *exec.Cmd) {
+			outpipe, err := kcmd.StdoutPipe()
+			if err != nil {
+				failx(err)
+			}
+
+			errpipe, err := kcmd.StderrPipe()
+			if err != nil {
+				failx(err)
+			}
+
+			err = kcmd.Start()
+			if err != nil {
+				failx(err)
+			}
+
+			go func() {
+				outscan := bufio.NewScanner(outpipe)
+				for {
+					chk := outscan.Scan()
+					if !chk {
+						break
+					}
+
+					stxt := outscan.Text()
+					log.Printf("%v|stdout: %v", green(kcmd.Args), stxt)
+				}
+			}()
+
+			go func() {
+				errscan := bufio.NewScanner(errpipe)
+				for {
+					chk := errscan.Scan()
+					if !chk {
+						break
+					}
+
+					stxt := errscan.Text()
+					log.Printf("%v|stderr: %v", green(kcmd.Args), stxt)
+				}
+			}()
+
+			kcmd.Wait()
+		}(c)
+	}
+
+	<-done
 	return nil
 }
 
