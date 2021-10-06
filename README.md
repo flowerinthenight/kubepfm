@@ -8,8 +8,7 @@
 
 Using [Homebrew](https://brew.sh/):
 ```bash
-$ brew tap flowerinthenight/tap
-$ brew install kubepfm
+$ brew install flowerinthenight/tap/kubepfm
 ```
 
 If you have a Go environment:
