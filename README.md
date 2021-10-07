@@ -79,10 +79,10 @@ herpod-7d48964997-d6pgs              1/1       Running     0          3d
 Do a port-forward to two pods using port 1222 to our local 8080 and 8081 ports:
 ```bash
 $ kubepfm --target mypod:8080:1222 --target otherpod:8081:1222
-[kubectl port-forward -n default pod/mypod* 8080:1222] Forwarding from 127.0.0.1:8080 -> 1222
-[kubectl port-forward -n default pod/mypod* 8080:1222] Forwarding from [::1]:8080 -> 1222
-[kubectl port-forward -n default pod/otherpod* 8081:1222] Forwarding from 127.0.0.1:8081 -> 1222
-[kubectl port-forward -n default pod/otherpod* 8081:1222] Forwarding from [::1]:8081 -> 1222
+[kubectl port-forward -n default pod/mypod 8080:1222] Forwarding from 127.0.0.1:8080 -> 1222
+[kubectl port-forward -n default pod/mypod 8080:1222] Forwarding from [::1]:8080 -> 1222
+[kubectl port-forward -n default pod/otherpod 8081:1222] Forwarding from 127.0.0.1:8081 -> 1222
+[kubectl port-forward -n default pod/otherpod 8081:1222] Forwarding from [::1]:8081 -> 1222
 ```
 
 Both pods are now accessible from localhost:
