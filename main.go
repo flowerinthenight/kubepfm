@@ -35,7 +35,7 @@ var (
 // Returns the kubectl args, kubectl context name, resource name, and the port pair (i.e. 8080:1222) from the input.
 func parse(in string) ([]string, string, string, string) {
 	var args []string
-	var ctx, name, ports string
+	var ctx, name, ports, address string
 	rctype := "pod"
 	ns := "default"
 	t := strings.Split(in, ":")
@@ -82,7 +82,7 @@ func parse(in string) ([]string, string, string, string) {
 			"-o",
 			"custom-columns=:metadata.name,:metadata.namespace",
 		}
-	case len(t) > 4 && strings.HasPrefix(in, "ctx="):
+	case len(t) == 5 && strings.HasPrefix(in, "ctx="):
 		// With context and optional namespace: [ctx=context:ns=namespace:]name:port:port
 		ctx = strings.Split(t[0], "=")[1]
 		ns = t[1]
@@ -102,6 +102,31 @@ func parse(in string) ([]string, string, string, string) {
 			"--no-headers=true",
 			fmt.Sprintf("--context=%s", ctx),
 			fmt.Sprintf("--namespace=%s", ns),
+			"-o",
+			"custom-columns=:metadata.name,:metadata.namespace",
+		}
+	case len(t) == 6 && strings.HasPrefix(in, "ctx="):
+		// With context and optional namespace: [ctx=context:ns=namespace:]name:port:port
+		ctx = strings.Split(t[0], "=")[1]
+		ns = t[1]
+		if strings.HasPrefix(ns, "ns=") {
+			ns = strings.Split(ns, "=")[1]
+		}
+
+		name = t[2]
+		if nn := strings.Split(name, "/"); len(nn) > 1 {
+			rctype = nn[0]
+		}
+
+		ports = t[len(t)-2] + ":" + t[len(t)-1]
+		address = t[len(t)-3]
+		args = []string{
+			"get",
+			rctype,
+			"--no-headers=true",
+			fmt.Sprintf("--context=%s", ctx),
+			fmt.Sprintf("--namespace=%s", ns),
+			fmt.Sprintf("--address=%s", address),
 			"-o",
 			"custom-columns=:metadata.name,:metadata.namespace",
 		}
