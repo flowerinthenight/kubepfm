@@ -39,7 +39,7 @@ $ kubepfm --target "ctx=devcluster:ns=default:mypod:8080:1222" \
           --target "ctx=prodcluster:ns=default:somepod:8081:1222"
 
 # With address specified:
-$ kubepfm --target "ctx=prodcluster:ns=default:somepod:127.0.02:8081:1222"
+$ kubepfm --target "ctx=prodcluster:ns=default:somepod:127.0.0.2:8081:1222"
 ```
 
 You can also pipe input from STDIN as well.
