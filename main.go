@@ -106,7 +106,7 @@ func parse(in string) ([]string, string, string, string) {
 			"custom-columns=:metadata.name,:metadata.namespace",
 		}
 	case len(t) == 6 && strings.HasPrefix(in, "ctx="):
-		// With context and optional namespace: [ctx=context:ns=namespace:]name:port:port
+		// With context, optional namespace and optional address: [ctx=context:ns=namespace:]name:[address:]port:port
 		ctx = strings.Split(t[0], "=")[1]
 		ns = t[1]
 		if strings.HasPrefix(ns, "ns=") {
