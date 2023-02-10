@@ -6,12 +6,13 @@ import (
 )
 
 type check struct {
-	target string
-	ctx    string
-	rctype string
-	name   string
-	ns     string
-	ports  string
+	target  string
+	ctx     string
+	rctype  string
+	name    string
+	ns      string
+	ports   string
+	address string
 }
 
 func Test_parse(t *testing.T) {
@@ -22,12 +23,13 @@ func Test_parse(t *testing.T) {
 	}
 
 	for _, v := range []check{
-		{"name:8080:1222", "", "pod", "name", "default", "8080:1222"},
-		{"deployment/name:8080:1222", "", "deployment", "deployment/name", "default", "8080:1222"},
-		{"system:service/name:8080:1222", "", "service", "service/name", "system", "8080:1222"},
-		{"ns=system:service/name:8080:1222", "", "service", "service/name", "system", "8080:1222"},
-		{"ctx=minikube:ns=system:deployment/name:8080:1222", "minikube", "deployment", "deployment/name", "system", "8080:1222"},
-		{"ctx=minikube:system:name:8080:1222", "minikube", "pod", "name", "system", "8080:1222"},
+		{"name:8080:1222", "", "pod", "name", "default", "8080:1222", ""},
+		{"deployment/name:8080:1222", "", "deployment", "deployment/name", "default", "8080:1222", ""},
+		{"system:service/name:8080:1222", "", "service", "service/name", "system", "8080:1222", ""},
+		{"ns=system:service/name:8080:1222", "", "service", "service/name", "system", "8080:1222", ""},
+		{"ctx=minikube:ns=system:deployment/name:8080:1222", "minikube", "deployment", "deployment/name", "system", "8080:1222", ""},
+		{"ctx=minikube:ns=system:deployment/name:127.0.0.2:8080:1222", "minikube", "deployment", "deployment/name", "system", "8080:1222", "127.0.0.2"},
+		{"ctx=minikube:system:name:8080:1222", "minikube", "pod", "name", "system", "8080:1222", ""},
 	} {
 		args, ctx, name, ports := parse(v.target)
 		if ctx != v.ctx {
