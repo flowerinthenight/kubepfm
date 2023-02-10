@@ -3,7 +3,6 @@ jobs:
   build:
     docker:
     - image: cimg/go:1.15.4
-    working_directory: /go/src/github.com/flowerinthenight/kubepfm/
     steps:
     - checkout
     - run:
@@ -15,7 +14,6 @@ jobs:
   build-deploy:
     docker:
     - image: cimg/go:1.15.4
-    working_directory: /go/src/github.com/flowerinthenight/kubepfm/
     steps:
     - checkout
     - run:
