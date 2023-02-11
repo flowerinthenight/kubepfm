@@ -2,8 +2,7 @@ version: 2
 jobs:
   build:
     docker:
-    - image: circleci/golang:1.15.4
-    working_directory: /go/src/github.com/flowerinthenight/kubepfm/
+    - image: cimg/go:1.15.4
     steps:
     - checkout
     - run:
@@ -14,8 +13,7 @@ jobs:
 
   build-deploy:
     docker:
-    - image: circleci/golang:1.15.4
-    working_directory: /go/src/github.com/flowerinthenight/kubepfm/
+    - image: cimg/go:1.15.4
     steps:
     - checkout
     - run:
