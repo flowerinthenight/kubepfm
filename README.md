@@ -1,4 +1,4 @@
-[![CircleCI](https://circleci.com/gh/flowerinthenight/kubepfm/tree/master.svg?style=svg)](https://circleci.com/gh/flowerinthenight/kubepfm/tree/master)
+[![main](https://github.com/flowerinthenight/kubepfm/actions/workflows/main.yml/badge.svg)](https://github.com/flowerinthenight/kubepfm/actions/workflows/main.yml)
 
 ## Overview
 
