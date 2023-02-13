@@ -30,4 +30,4 @@ brews:
   install: |
     bin.install "kubepfm"
   test: |
-    assert_match /A simple port-forward wrapper tool for multiple pods\/deployments\/services\/, shell_output("#{bin}/kubepfm -h", 0)
+    assert_match /A simple port-forward wrapper tool for multiple pods\/deployments\/services/, shell_output("#{bin}/kubepfm -h", 0)
