@@ -19,7 +19,9 @@ $ go get -u -v github.com/flowerinthenight/kubepfm
 ## Usage
 
 ```bash
-$ kubepfm --target [ctx=context:[ns=]namespace:]name|pattern:[localaddress:]localport:remoteport [--target ...]
+$ kubepfm \
+  --target [ctx=context:[ns=]namespace:]name|pattern:[localaddress:]localport:remoteport \
+  [--target ...]
 ```
 If the `[ctx=context]` part is not specified, the current context is used. If the `[ns=namespace:]` part is not specified, the `default` namespace is used.
 
