@@ -17,7 +17,7 @@ type check struct {
 
 func Test_parse(t *testing.T) {
 	var args []string
-	args, _, _, _ = parse("8080:1222")
+	args, _, _, _, _ = parse("8080:1222")
 	if args != nil {
 		t.Fatal("should be nil")
 	}
@@ -31,7 +31,7 @@ func Test_parse(t *testing.T) {
 		{"ctx=minikube:ns=system:deployment/name:127.0.0.2:8080:1222", "minikube", "deployment", "deployment/name", "system", "8080:1222", "127.0.0.2"},
 		{"ctx=minikube:system:name:8080:1222", "minikube", "pod", "name", "system", "8080:1222", ""},
 	} {
-		args, ctx, name, ports := parse(v.target)
+		args, ctx, name, ports, address := parse(v.target)
 		if ctx != v.ctx {
 			t.Fatalf("[%v] context should be %v, got %v", v.target, v.ctx, ctx)
 		}
@@ -51,6 +51,9 @@ func Test_parse(t *testing.T) {
 		}
 		if ports != v.ports {
 			t.Fatalf("[%v] ports should be %v, got %v", v.target, v.ports, ports)
+		}
+		if address != v.address {
+			t.Fatalf("[%v] address should be %v, got %v", v.target, v.address, address)
 		}
 	}
 }

@@ -33,7 +33,7 @@ var (
 )
 
 // Returns the kubectl args, kubectl context name, resource name, and the port pair (i.e. 8080:1222) from the input.
-func parse(in string) ([]string, string, string, string) {
+func parse(in string) ([]string, string, string, string, string) {
 	var args []string
 	var ctx, name, ports, address string
 	rctype := "pod"
@@ -126,7 +126,6 @@ func parse(in string) ([]string, string, string, string) {
 			"--no-headers=true",
 			fmt.Sprintf("--context=%s", ctx),
 			fmt.Sprintf("--namespace=%s", ns),
-			fmt.Sprintf("--address=%s", address),
 			"-o",
 			"custom-columns=:metadata.name,:metadata.namespace",
 		}
@@ -135,7 +134,7 @@ func parse(in string) ([]string, string, string, string) {
 		fail("skip unknown target: " + in)
 	}
 
-	return args, ctx, name, ports
+	return args, ctx, name, ports, address
 }
 
 func Run(cmd *cobra.Command, args []string) error {
@@ -153,7 +152,7 @@ func Run(cmd *cobra.Command, args []string) error {
 
 	// Range through our input targets.
 	for _, c := range targets {
-		v, ctx, name, portpair := parse(c)
+		v, ctx, name, portpair, address := parse(c)
 		if v == nil {
 			return fmt.Errorf("invalid target: %v", c)
 		}
@@ -185,13 +184,18 @@ func Run(cmd *cobra.Command, args []string) error {
 			targetList := re.FindAllString(parts[0], -1)
 			if len(targetList) > 0 {
 				var addcmd *exec.Cmd
-				if ctx == "" {
+				switch {
+				case ctx == "" && address == "":
 					addcmd = exec.Command("kubectl", "port-forward", "-n", parts[1], rctype+"/"+targetList[0], portpair)
-				} else {
+				case address == "":
 					addcmd = exec.Command("kubectl", "--context", ctx, "port-forward", "-n", parts[1], rctype+"/"+targetList[0], portpair)
+				case ctx == "":
+					addcmd = exec.Command("kubectl", "port-forward", "-n", parts[1], rctype+"/"+targetList[0], "--address", address, portpair)
+				default:
+					addcmd = exec.Command("kubectl", "--context", ctx, "port-forward", "-n", parts[1], rctype+"/"+targetList[0], "--address", address, portpair)
 				}
 
-				key := fmt.Sprintf("%s:%s:%s:%s", ctx, parts[1], name, portpair)
+				key := fmt.Sprintf("%s:%s:%s:%s:%s", ctx, parts[1], name, address, portpair)
 				if _, ok := cs[key]; !ok {
 					cs[key] = addcmd
 				}
