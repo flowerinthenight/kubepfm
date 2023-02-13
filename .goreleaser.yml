@@ -25,9 +25,9 @@ brews:
     name: homebrew-tap
   name: kubepfm
   homepage: "https://github.com/flowerinthenight/kubepfm"
-  description: "Simple port-forward wrapper tool for multiple pods."
+  description: "A simple port-forward wrapper tool for multiple pods/deployments/services."
   folder: Formula
   install: |
     bin.install "kubepfm"
   test: |
-    assert_match /Simple port-forward wrapper tool for multiple pods/, shell_output("#{bin}/kubepfm -h", 0)
+    assert_match /A simple port-forward wrapper tool for multiple pods/deployments/services/, shell_output("#{bin}/kubepfm -h", 0)
