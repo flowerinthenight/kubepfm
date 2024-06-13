@@ -12,7 +12,6 @@ import (
 	"syscall"
 
 	"github.com/fatih/color"
-	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 )
 
@@ -280,7 +279,7 @@ func main() {
 	go func() {
 		s := make(chan os.Signal)
 		signal.Notify(s, syscall.SIGINT, syscall.SIGTERM)
-		sig := errors.Errorf("%s", <-s)
+		sig := fmt.Errorf("%s", <-s)
 		_ = sig
 
 		for _, c := range cs {
