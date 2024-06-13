@@ -30,7 +30,8 @@ var (
 		Use:   "kubepfm",
 		Short: "A simple port-forward wrapper tool for multiple pods/deployments/services",
 		Long: `A simple port-forward wrapper tool for multiple pods/deployments/services.
-[version=` + version + `, commit=` + commit + `, date=` + date + `]`,
+
+[version=` + version + `, commit=` + commit + `]`,
 		RunE:         Run,
 		SilenceUsage: true,
 	}
