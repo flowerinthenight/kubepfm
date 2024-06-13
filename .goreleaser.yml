@@ -1,3 +1,4 @@
+version: 2
 builds:
 - id: "kubepfm"
   binary: kubepfm
@@ -20,13 +21,13 @@ release:
     owner: flowerinthenight
     name: kubepfm
 brews:
-- tap:
+- repository:
     owner: flowerinthenight
     name: homebrew-tap
   name: kubepfm
   homepage: "https://github.com/flowerinthenight/kubepfm"
   description: "A simple port-forward wrapper tool for multiple pods/deployments/services."
-  folder: Formula
+  directory: Formula
   install: |
     bin.install "kubepfm"
   test: |
