@@ -1,5 +1,5 @@
 ---
-name: Build
+name: main
 
 on:
   push:
