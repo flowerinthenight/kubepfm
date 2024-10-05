@@ -1,5 +1,7 @@
 [![main](https://github.com/flowerinthenight/kubepfm/actions/workflows/main.yml/badge.svg)](https://github.com/flowerinthenight/kubepfm/actions/workflows/main.yml)
 
+(This repo is mirrored to [https://codeberg.org/flowerinthenight/kubepfm](https://codeberg.org/flowerinthenight/kubepfm)).
+
 ## Overview
 
 `kubepfm` is a simple wrapper to the [`kubectl port-forward`](https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/) command for multiple pods/deployments/services. It can start multiple `kubectl port-forward` processes based on the number of input targets. Terminating the tool (Ctrl-C) will also terminate all running `kubectl` sub-processes.
