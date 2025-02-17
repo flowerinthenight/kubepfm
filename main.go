@@ -283,7 +283,7 @@ func failx(v ...interface{}) {
 
 func main() {
 	go func() {
-		s := make(chan os.Signal)
+		s := make(chan os.Signal, 1)
 		signal.Notify(s, syscall.SIGINT, syscall.SIGTERM)
 		sig := fmt.Errorf("%s", <-s)
 		_ = sig
